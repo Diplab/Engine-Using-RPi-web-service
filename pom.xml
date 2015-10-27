@@ -82,9 +82,9 @@
 							<sourceDestDir>${basedir}/target/generated-sources/main/java</sourceDestDir>
 							<wsdlUrls>
 								<wsdlUrl>
-									http://192.168.0.129:9005/webservice/sayHello?wsdl</wsdlUrl>
+									http://192.168.0.129:9005/webservice/Escape?wsdl</wsdlUrl>
 								<wsdlUrl>
-									http://192.168.0.131:9005/webservice/sayHello?wsdl</wsdlUrl>
+									http://192.168.0.131:9005/webservice/Escape?wsdl</wsdlUrl>
 							</wsdlUrls>
 						</configuration>
 					</execution>
