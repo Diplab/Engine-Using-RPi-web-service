@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<activiti-version>5.17.0</activiti-version>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.activiti</groupId>
@@ -64,8 +64,8 @@
 		</dependency>
 
 	</dependencies>
-	
-	
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -82,9 +82,9 @@
 							<sourceDestDir>${basedir}/target/generated-sources/main/java</sourceDestDir>
 							<wsdlUrls>
 								<wsdlUrl>
-									http://192.168.0.129:9005/webservice/Escape?wsdl</wsdlUrl>
+									http://192.168.0.129:9005/webservice/Device129?wsdl</wsdlUrl>
 								<wsdlUrl>
-									http://192.168.0.131:9005/webservice/Escape?wsdl</wsdlUrl>
+									http://192.168.0.131:9005/webservice/Device131?wsdl</wsdlUrl>
 							</wsdlUrls>
 						</configuration>
 					</execution>

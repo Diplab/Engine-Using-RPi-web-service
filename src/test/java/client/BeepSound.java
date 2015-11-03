@@ -1,7 +1,5 @@
 package client;
 
-import java.awt.Toolkit;
-import java.util.concurrent.TimeUnit;
 
 public class BeepSound {
 

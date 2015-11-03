@@ -1,14 +1,19 @@
 package com.diplab;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration;
 
-import com.diplab.serviceimp.EscapeService;
-import com.diplab.serviceimp.EscapeServiceImplService;
+import com.diplab.webservice.Device129;
+import com.diplab.webservice.Device129Service;
+import com.diplab.webservice.Device131;
+import com.diplab.webservice.Device131Service;
+import com.diplab.webservice.PinState;
 
 public class Escape {
 
@@ -24,67 +29,97 @@ public class Escape {
 				.disableSchemaValidation().disableBpmnValidation()
 				.addClasspathResource("bpmn/escape.bpmn").deploy();
 
-		processEngine.getRuntimeService()
-				.startProcessInstanceByKey("myProcess");
-		
+		Map<String, Object> processVariable = new HashMap<>();
+		Device129 device129 = new SerializableDevice129();
+		Device131 device131 = new SerializableDevice131();
+		processVariable.put("device129", device129);
+		processVariable.put("device131", device131);
+
+		processEngine.getRuntimeService().startProcessInstanceByKey(
+				"myProcess", processVariable);
 
 	}
 
-	public static double co2Ppm129() throws MalformedURLException {
-		Double co2 = new EscapeServiceImplService(new URL(
-				"http://192.168.0.129:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort().co2Ppm();
-		return co2;
+}
+
+class SerializableDevice129 implements Serializable, Device129 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1899059621734420049L;
+
+	public void off() {
+		new Device129Service().getDevice129Port().off();
 	}
 
-	public static double co2Ppm131() throws MalformedURLException {
-		Double co2 = new EscapeServiceImplService(new URL(
-				"http://192.168.0.131:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort().co2Ppm();
-		return co2;
+	public void on() {
+		new Device129Service().getDevice129Port().on();
 	}
 
-	public static void off_129() throws MalformedURLException {
-		EscapeService EscapeService_129ImplPort = new EscapeServiceImplService(
-				new URL("http://192.168.0.129:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort();
-		EscapeService_129ImplPort.off();
-		return;
+	public void toggle() {
+		new Device129Service().getDevice129Port().toggle();
 	}
 
-	public static void on_129() throws MalformedURLException {
-		EscapeService EscapeService_129ImplPort = new EscapeServiceImplService(
-				new URL("http://192.168.0.129:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort();
-		EscapeService_129ImplPort.on();
-		return;
+	public double co2Ppm() {
+		return new Device129Service().getDevice129Port().co2Ppm();
 	}
 
-	public static void executeAC_131() throws MalformedURLException {
-		EscapeService EscapeService_131ImplPort = new EscapeServiceImplService(
-				new URL("http://192.168.0.131:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort();
-		EscapeService_131ImplPort.executeAC();
-		return;
+	public double getSmokePpm() {
+		return new Device129Service().getDevice129Port().getSmokePpm();
 	}
 
-	public static double read() throws MalformedURLException {
-		Double temperatuer = new EscapeServiceImplService(new URL(
-				"http://192.168.0.129:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort().readTemperature();
-		return temperatuer;
+	public double readTemperature() {
+		return new Device129Service().getDevice129Port().readTemperature();
 	}
 
-	public static void lock() throws MalformedURLException {
-		new EscapeServiceImplService(new URL(
-				"http://192.168.0.129:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort().lock();
+	public double cOppm() {
+		return new Device129Service().getDevice129Port().cOppm();
 	}
 
-	public static void unlock() throws MalformedURLException {
-		new EscapeServiceImplService(new URL(
-				"http://192.168.0.129:9005/webservice/Escape?wsdl"))
-				.getEscapeServiceImplPort().unlock();
+	public void lock() {
+		new Device129Service().getDevice129Port().lock();
 	}
 
+	public PinState getState() {
+		return new Device129Service().getDevice129Port().getState();
+	}
+
+	public void unlock() {
+		new Device129Service().getDevice129Port().unlock();
+	}
+}
+
+class SerializableDevice131 implements Serializable, Device131 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2319477314319117003L;
+
+	public void off() {
+		new Device131Service().getDevice131Port().off();
+	}
+
+	public void on() {
+		new Device131Service().getDevice131Port().on();
+	}
+
+	public double getSmokePpm() {
+		return new Device131Service().getDevice131Port().getSmokePpm();
+	}
+
+	public void executeAC() {
+		new Device131Service().getDevice131Port().executeAC();
+	}
+
+	public double cOppm() {
+		return new Device131Service().getDevice131Port().cOppm();
+	}
+
+	public void toggle() {
+		new Device131Service().getDevice131Port().toggle();
+	}
+
+	public PinState getState() {
+		return new Device131Service().getDevice131Port().getState();
+	}
 }
