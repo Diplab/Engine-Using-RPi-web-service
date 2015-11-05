@@ -82,9 +82,15 @@
 							<sourceDestDir>${basedir}/target/generated-sources/main/java</sourceDestDir>
 							<wsdlUrls>
 								<wsdlUrl>
-									http://192.168.0.129:9005/webservice/Device129?wsdl</wsdlUrl>
+									http://192.168.0.108:9005/webservice/Device129?wsdl</wsdlUrl>
 								<wsdlUrl>
 									http://192.168.0.131:9005/webservice/Device131?wsdl</wsdlUrl>
+								<wsdlUrl>
+									http://192.168.0.127:9005/webservice/Device127?wsdl</wsdlUrl>
+								<wsdlUrl>
+									http://192.168.0.124:9005/webservice/Device124?wsdl</wsdlUrl>
+								<wsdlUrl>
+									http://192.168.0.135:9005/webservice/Device135?wsdl</wsdlUrl>
 							</wsdlUrls>
 						</configuration>
 					</execution>

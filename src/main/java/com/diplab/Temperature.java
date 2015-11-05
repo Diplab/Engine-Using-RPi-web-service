@@ -20,8 +20,6 @@ public class Temperature {
 				.disableSchemaValidation().disableBpmnValidation()
 				.addClasspathResource("bpmn/temperature.bpmn").deploy();
 
-		// TODO NOT FINISH
-
 		processEngine.getRuntimeService()
 				.startProcessInstanceByKey("myProcess");
 

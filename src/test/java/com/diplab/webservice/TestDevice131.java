@@ -57,5 +57,11 @@ public class TestDevice131 {
 				device131Service.getState());
 
 	}
+	
+	@Test
+	public void testReadTemperature() {
+		double temp = device131Service.readTemperature();
+		Assert.assertTrue("should be room temp", Math.abs(temp - 35) < 30);
+	}
 
 }
