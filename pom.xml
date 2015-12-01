@@ -22,6 +22,11 @@
 			<version>${activiti-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.activiti</groupId>
+			<artifactId>activiti-spring</artifactId>
+			<version>${activiti-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 			<version>2.0.4</version>
@@ -45,6 +50,11 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.subethamail</groupId>
+			<artifactId>subethasmtp</artifactId>
+			<version>3.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.pi4j</groupId>
@@ -82,7 +92,7 @@
 							<sourceDestDir>${basedir}/target/generated-sources/main/java</sourceDestDir>
 							<wsdlUrls>
 								<wsdlUrl>
-									http://192.168.0.108:9005/webservice/Device129?wsdl</wsdlUrl>
+									http://192.168.0.129:9005/webservice/Device129?wsdl</wsdlUrl>
 								<wsdlUrl>
 									http://192.168.0.131:9005/webservice/Device131?wsdl</wsdlUrl>
 								<wsdlUrl>
@@ -91,6 +101,10 @@
 									http://192.168.0.124:9005/webservice/Device124?wsdl</wsdlUrl>
 								<wsdlUrl>
 									http://192.168.0.135:9005/webservice/Device135?wsdl</wsdlUrl>
+								<wsdlUrl>
+									http://192.168.0.133:9005/webservice/Device133?wsdl</wsdlUrl>
+								<wsdlUrl>
+									http://192.168.0.137:9005/webservice/Device137?wsdl</wsdlUrl>
 							</wsdlUrls>
 						</configuration>
 					</execution>

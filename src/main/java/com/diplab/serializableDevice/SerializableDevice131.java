@@ -21,24 +21,16 @@ public class SerializableDevice131 implements Serializable, Device131{
 		return device;
 	}
 
+	public void executeAC() {
+		new Device131Service().getDevice131Port().executeAC();
+	}
+
 	public void off() {
 		new Device131Service().getDevice131Port().off();
 	}
 
 	public void on() {
 		new Device131Service().getDevice131Port().on();
-	}
-
-	public double getSmokePpm() {
-		return new Device131Service().getDevice131Port().getSmokePpm();
-	}
-
-	public void executeAC() {
-		new Device131Service().getDevice131Port().executeAC();
-	}
-
-	public double cOppm() {
-		return new Device131Service().getDevice131Port().cOppm();
 	}
 
 	public void toggle() {
@@ -49,7 +41,15 @@ public class SerializableDevice131 implements Serializable, Device131{
 		return new Device131Service().getDevice131Port().getState();
 	}
 	
-	public double readTemperature() {
-		return new Device131Service().getDevice131Port().readTemperature();
+	public void alertoff() {
+		new Device131Service().getDevice131Port().alertoff();
+	}
+
+	public void alerton() {
+		new Device131Service().getDevice131Port().alerton();
+	}
+
+	public PinState getAlertState() {
+		return new Device131Service().getDevice131Port().getAlertState();
 	}
 }

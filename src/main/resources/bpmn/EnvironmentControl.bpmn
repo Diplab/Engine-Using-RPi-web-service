@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <collaboration id="Collaboration">
+    <participant id="pool1" name="Environment  Control" processRef="process_pool1"></participant>
+  </collaboration>
+  <process id="process_pool1" name="process_pool1" isExecutable="true">
+    <laneSet id="laneSet_process_pool1">
+      <lane id="lane1" name="class A">
+        <flowNodeRef>timerstartevent1</flowNodeRef>
+        <flowNodeRef>parallelgateway1</flowNodeRef>
+        <flowNodeRef>parallelgateway2</flowNodeRef>
+        <flowNodeRef>scripttask1</flowNodeRef>
+        <flowNodeRef>parallelgateway3</flowNodeRef>
+        <flowNodeRef>scripttask2</flowNodeRef>
+        <flowNodeRef>scripttask3</flowNodeRef>
+        <flowNodeRef>scripttask4</flowNodeRef>
+        <flowNodeRef>exclusivegateway1</flowNodeRef>
+        <flowNodeRef>exclusivegateway2</flowNodeRef>
+        <flowNodeRef>scripttask5</flowNodeRef>
+        <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>parallelgateway6</flowNodeRef>
+      </lane>
+      <lane id="lane2" name="class B">
+        <flowNodeRef>scripttask6</flowNodeRef>
+        <flowNodeRef>scripttask7</flowNodeRef>
+        <flowNodeRef>exclusivegateway3</flowNodeRef>
+        <flowNodeRef>scripttask8</flowNodeRef>
+        <flowNodeRef>endevent2</flowNodeRef>
+        <flowNodeRef>scripttask9</flowNodeRef>
+        <flowNodeRef>scripttask10</flowNodeRef>
+        <flowNodeRef>exclusivegateway4</flowNodeRef>
+        <flowNodeRef>parallelgateway9</flowNodeRef>
+      </lane>
+      <lane id="lane3" name="user">
+        <flowNodeRef>parallelgateway5</flowNodeRef>
+        <flowNodeRef>scripttask11</flowNodeRef>
+        <flowNodeRef>endevent3</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="timerstartevent1" name="Timer start">
+      <timerEventDefinition>
+        <timeCycle>R/PT10S</timeCycle>
+      </timerEventDefinition>
+    </startEvent>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow1" sourceRef="timerstartevent1" targetRef="parallelgateway1"></sequenceFlow>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow2" sourceRef="parallelgateway1" targetRef="parallelgateway2"></sequenceFlow>
+    <scriptTask id="scripttask1" name="co2 A" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>CO2A =com.diplab.serializableDevice.SerializableDevice129.getInstanceOfSerializableDevice129().co2Ppm();
+out.println("CO2 A = " + CO2A + "ppm");
+execution.setVariable("CO2A",CO2A);
+</script>
+    </scriptTask>
+    <sequenceFlow id="flow3" sourceRef="parallelgateway2" targetRef="scripttask1"></sequenceFlow>
+    <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow4" sourceRef="parallelgateway1" targetRef="parallelgateway3"></sequenceFlow>
+    <scriptTask id="scripttask2" name="co A" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>COA =com.diplab.serializableDevice.SerializableDevice129.getInstanceOfSerializableDevice129().cOppm();
+out.println("CO A = " + COA + "ppm");
+execution.setVariable("COA",COA);
+</script>
+    </scriptTask>
+    <sequenceFlow id="flow5" sourceRef="parallelgateway3" targetRef="scripttask2"></sequenceFlow>
+    <scriptTask id="scripttask3" name="record co A" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>com.diplab.db.SensorMapper mapper = sqlSession.getMapper(com.diplab.db.SensorMapper.class);
+com.diplab.db.Sensor sensor = new com.diplab.db.Sensor();
+sensor.setDevice(com.diplab.serializableDevice.SerializableDevice129.getInstanceOfSerializableDevice129().getDevice());
+sensor.setType(com.diplab.serializableDevice.SerializableDevice129.getInstanceOfSerializableDevice129().getTypeCO());
+sensor.setData(COA);
+sensor.setTime(new Date());
+mapper.insert(sensor);
+sqlSession.commit();</script>
+    </scriptTask>
+    <sequenceFlow id="flow6" sourceRef="scripttask2" targetRef="scripttask3"></sequenceFlow>
+    <scriptTask id="scripttask4" name="record co2 A" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>com.diplab.db.SensorMapper mapper = sqlSession.getMapper(com.diplab.db.SensorMapper.class);
+com.diplab.db.Sensor sensor = new com.diplab.db.Sensor();
+sensor.setDevice(com.diplab.serializableDevice.SerializableDevice129.getInstanceOfSerializableDevice129().getDevice());
+sensor.setType(com.diplab.serializableDevice.SerializableDevice129.getInstanceOfSerializableDevice129().getTypeCO2());
+sensor.setData(CO2A);
+sensor.setTime(new Date());
+mapper.insert(sensor);
+sqlSession.commit();</script>
+    </scriptTask>
+    <sequenceFlow id="flow7" sourceRef="scripttask1" targetRef="scripttask4"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow8" sourceRef="scripttask4" targetRef="exclusivegateway1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow9" sourceRef="scripttask3" targetRef="exclusivegateway2"></sequenceFlow>
+    <scriptTask id="scripttask5" name="open fans A" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out.println("open fans A");
+com.diplab.serializableDevice.SerializableDevice131.getInstanceOfSerializableDevice131().on();</script>
+    </scriptTask>
+    <sequenceFlow id="flow10" name="&gt; 800ppm" sourceRef="exclusivegateway1" targetRef="scripttask5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${CO2A>=800}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow11" name="&gt;=200ppm" sourceRef="exclusivegateway2" targetRef="scripttask5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${COA>=200}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow12" sourceRef="scripttask5" targetRef="parallelgateway6"></sequenceFlow>
+    <sequenceFlow id="flow13" name="&lt; 800ppm" sourceRef="exclusivegateway1" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${CO2A<800}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow14" name="&lt; 200ppm" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${COA<200}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="parallelgateway2" targetRef="scripttask6"></sequenceFlow>
+    <scriptTask id="scripttask6" name="co2 B" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>CO2B =com.diplab.serializableDevice.SerializableDevice135.getInstanceOfSerializableDevice135().co2Ppm();
+out.println("CO2 B = " + CO2B + "ppm");
+execution.setVariable("CO2B",CO2B);</script>
+    </scriptTask>
+    <scriptTask id="scripttask7" name="record co2 B" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>com.diplab.db.SensorMapper mapper = sqlSession.getMapper(com.diplab.db.SensorMapper.class);
+com.diplab.db.Sensor sensor = new com.diplab.db.Sensor();
+sensor.setDevice(com.diplab.serializableDevice.SerializableDevice135.getInstanceOfSerializableDevice135().getDevice());
+sensor.setType(com.diplab.serializableDevice.SerializableDevice135.getInstanceOfSerializableDevice135().getTypeCO2());
+sensor.setData(CO2B);
+sensor.setTime(new Date());
+mapper.insert(sensor);
+sqlSession.commit();</script>
+    </scriptTask>
+    <sequenceFlow id="flow16" sourceRef="scripttask6" targetRef="scripttask7"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow17" sourceRef="scripttask7" targetRef="exclusivegateway3"></sequenceFlow>
+    <scriptTask id="scripttask8" name="open fans B" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out.println("open fans B");
+com.diplab.serializableDevice.SerializableDevice124.getInstanceOfSerializableDevice124().on();</script>
+    </scriptTask>
+    <sequenceFlow id="flow18" name="&gt;=800ppm" sourceRef="exclusivegateway3" targetRef="scripttask8">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${CO2B>=800}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow19" sourceRef="scripttask8" targetRef="parallelgateway9"></sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="parallelgateway3" targetRef="scripttask9"></sequenceFlow>
+    <scriptTask id="scripttask9" name="co B" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>COB =com.diplab.serializableDevice.SerializableDevice135.getInstanceOfSerializableDevice135().cOppm();
+out.println("CO B = " + COB + "ppm");
+execution.setVariable("COB",COB);
+</script>
+    </scriptTask>
+    <scriptTask id="scripttask10" name="record co B" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>com.diplab.db.SensorMapper mapper = sqlSession.getMapper(com.diplab.db.SensorMapper.class);
+com.diplab.db.Sensor sensor = new com.diplab.db.Sensor();
+sensor.setDevice(com.diplab.serializableDevice.SerializableDevice135.getInstanceOfSerializableDevice135().getDevice());
+sensor.setType(com.diplab.serializableDevice.SerializableDevice135.getInstanceOfSerializableDevice135().getTypeCO());
+sensor.setData(COB);
+sensor.setTime(new Date());
+mapper.insert(sensor);
+sqlSession.commit();</script>
+    </scriptTask>
+    <sequenceFlow id="flow21" sourceRef="scripttask9" targetRef="scripttask10"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow22" sourceRef="scripttask10" targetRef="exclusivegateway4"></sequenceFlow>
+    <sequenceFlow id="flow23" name="&gt; =200ppm" sourceRef="exclusivegateway4" targetRef="scripttask8">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${COB>=200}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow24" name="&lt; 800ppm" sourceRef="exclusivegateway3" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${CO2B<800}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow25" name="&lt; 200ppm" sourceRef="exclusivegateway4" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${COB<200}]]></conditionExpression>
+    </sequenceFlow>
+    <parallelGateway id="parallelgateway5" name="Parallel Gateway"></parallelGateway>
+    <parallelGateway id="parallelgateway6" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow27" sourceRef="parallelgateway6" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow29" sourceRef="parallelgateway6" targetRef="parallelgateway5"></sequenceFlow>
+    <scriptTask id="scripttask11" name="alert" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out.println("ALERT");</script>
+    </scriptTask>
+    <sequenceFlow id="flow30" sourceRef="parallelgateway5" targetRef="scripttask11"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow31" sourceRef="scripttask11" targetRef="endevent3"></sequenceFlow>
+    <parallelGateway id="parallelgateway9" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow28" sourceRef="parallelgateway9" targetRef="parallelgateway5"></sequenceFlow>
+    <sequenceFlow id="flow26" sourceRef="parallelgateway9" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="pool1" id="BPMNShape_pool1">
+        <omgdc:Bounds height="841.0" width="1321.0" x="50.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane1" id="BPMNShape_lane1">
+        <omgdc:Bounds height="321.0" width="1301.0" x="70.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane2" id="BPMNShape_lane2">
+        <omgdc:Bounds height="321.0" width="1301.0" x="70.0" y="351.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane3" id="BPMNShape_lane3">
+        <omgdc:Bounds height="199.0" width="1301.0" x="70.0" y="672.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="timerstartevent1" id="BPMNShape_timerstartevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="140.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="240.0" y="117.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="350.0" y="117.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="435.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway3" id="BPMNShape_parallelgateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="240.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="435.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask3" id="BPMNShape_scripttask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="585.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask4" id="BPMNShape_scripttask4">
+        <omgdc:Bounds height="55.0" width="105.0" x="585.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="735.0" y="118.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="735.0" y="231.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask5" id="BPMNShape_scripttask5">
+        <omgdc:Bounds height="55.0" width="105.0" x="840.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1090.0" y="174.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask6" id="BPMNShape_scripttask6">
+        <omgdc:Bounds height="55.0" width="105.0" x="440.0" y="420.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask7" id="BPMNShape_scripttask7">
+        <omgdc:Bounds height="55.0" width="105.0" x="590.0" y="420.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="740.0" y="428.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask8" id="BPMNShape_scripttask8">
+        <omgdc:Bounds height="55.0" width="105.0" x="840.0" y="478.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="1090.0" y="488.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask9" id="BPMNShape_scripttask9">
+        <omgdc:Bounds height="55.0" width="105.0" x="440.0" y="540.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask10" id="BPMNShape_scripttask10">
+        <omgdc:Bounds height="55.0" width="105.0" x="590.0" y="540.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="750.0" y="547.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway5" id="BPMNShape_parallelgateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="1080.0" y="750.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway6" id="BPMNShape_parallelgateway6">
+        <omgdc:Bounds height="40.0" width="40.0" x="990.0" y="171.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask11" id="BPMNShape_scripttask11">
+        <omgdc:Bounds height="55.0" width="105.0" x="1165.0" y="743.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="1315.0" y="753.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway9" id="BPMNShape_parallelgateway9">
+        <omgdc:Bounds height="40.0" width="40.0" x="1000.0" y="485.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="175.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="280.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="390.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="260.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="260.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="280.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="540.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="540.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="690.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="138.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="690.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="251.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="775.0" y="138.0"></omgdi:waypoint>
+        <omgdi:waypoint x="891.0" y="138.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="164.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="47.0" x="870.0" y="144.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="775.0" y="251.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="219.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="50.0" x="870.0" y="258.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="945.0" y="191.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="191.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="755.0" y="118.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="86.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="86.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="174.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="47.0" x="893.0" y="77.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="755.0" y="271.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="292.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="292.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="209.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="47.0" x="850.0" y="330.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="370.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="370.0" y="447.0"></omgdi:waypoint>
+        <omgdi:waypoint x="440.0" y="447.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="545.0" y="447.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.0" y="447.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="695.0" y="447.0"></omgdi:waypoint>
+        <omgdi:waypoint x="740.0" y="448.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="780.0" y="448.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="447.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="478.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="50.0" x="879.0" y="759.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="945.0" y="505.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1000.0" y="505.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="260.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="259.0" y="567.0"></omgdi:waypoint>
+        <omgdi:waypoint x="440.0" y="567.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="545.0" y="567.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.0" y="567.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="695.0" y="567.0"></omgdi:waypoint>
+        <omgdi:waypoint x="750.0" y="567.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="790.0" y="567.0"></omgdi:waypoint>
+        <omgdi:waypoint x="891.0" y="566.0"></omgdi:waypoint>
+        <omgdi:waypoint x="891.0" y="539.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="533.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="53.0" x="889.0" y="878.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="760.0" y="428.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="391.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="391.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="488.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="47.0" x="876.0" y="681.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="770.0" y="587.0"></omgdi:waypoint>
+        <omgdi:waypoint x="770.0" y="611.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="611.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1107.0" y="523.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="47.0" x="877.0" y="971.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="1030.0" y="191.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1090.0" y="191.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+        <omgdi:waypoint x="1010.0" y="211.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1179.0" y="465.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1100.0" y="750.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow30" id="BPMNEdge_flow30">
+        <omgdi:waypoint x="1120.0" y="770.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1165.0" y="770.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow31" id="BPMNEdge_flow31">
+        <omgdi:waypoint x="1270.0" y="770.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1315.0" y="770.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="1020.0" y="525.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1030.0" y="770.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="770.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="1040.0" y="505.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1090.0" y="505.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

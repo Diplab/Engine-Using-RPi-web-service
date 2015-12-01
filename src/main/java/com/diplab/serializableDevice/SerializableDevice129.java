@@ -20,17 +20,24 @@ public class SerializableDevice129 implements Serializable, Device129 {
 	public static SerializableDevice129 getInstanceOfSerializableDevice129() {
 		return device;
 	}
-
-	public void off() {
-		new Device129Service().getDevice129Port().off();
+	
+	public String getDevice(){
+		return "Device129";
+		
+	}
+	
+	public String getTypeCO(){
+		return "CO";
+		
+	}
+	
+	public String getTypeCO2(){
+		return "CO2";
+		
 	}
 
-	public void on() {
-		new Device129Service().getDevice129Port().on();
-	}
-
-	public void toggle() {
-		new Device129Service().getDevice129Port().toggle();
+	public double cOppm() {
+		return new Device129Service().getDevice129Port().cOppm();
 	}
 
 	public double co2Ppm() {
@@ -45,19 +52,28 @@ public class SerializableDevice129 implements Serializable, Device129 {
 		return new Device129Service().getDevice129Port().readTemperature();
 	}
 
-	public double cOppm() {
-		return new Device129Service().getDevice129Port().cOppm();
+	public void off() {
+		new Device129Service().getDevice129Port().off();
 	}
 
-	public void lock() {
-		new Device129Service().getDevice129Port().lock();
+	public void on() {
+		new Device129Service().getDevice129Port().on();
+	}
+
+	public void toggle() {
+		new Device129Service().getDevice129Port().toggle();
 	}
 
 	public PinState getState() {
 		return new Device129Service().getDevice129Port().getState();
 	}
 
+	public void lock() {
+		new Device129Service().getDevice129Port().lock();
+	}
+
 	public void unlock() {
 		new Device129Service().getDevice129Port().unlock();
 	}
+	
 }

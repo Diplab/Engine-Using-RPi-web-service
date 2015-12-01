@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="myProcess" name="My process" isExecutable="true">
+    <startEvent id="timerstartevent1" name="Timer start">
+      <timerEventDefinition>
+        <timeCycle>R/PT30S</timeCycle>
+      </timerEventDefinition>
+    </startEvent>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow1" sourceRef="timerstartevent1" targetRef="parallelgateway1"></sequenceFlow>
+    <scriptTask id="scripttask1" name="query co2 avg" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>com.diplab.db.SensorMapper mapper = sqlSession.getMapper(com.diplab.db.SensorMapper.class);
+float avgco2 = mapper.selectAVG("CO2", "Device129");
+out.println("co2 avg = " + avgco2 +"ppm");
+execution.setVariable("avgco2",avgco2);
+
+</script>
+    </scriptTask>
+    <sequenceFlow id="flow2" sourceRef="parallelgateway1" targetRef="scripttask1"></sequenceFlow>
+    <scriptTask id="scripttask2" name="query co avg" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>com.diplab.db.SensorMapper mapper = sqlSession.getMapper(com.diplab.db.SensorMapper.class);
+float avgco = mapper.selectAVG("CO", "Device129");
+out.println("co avg = " + avgco +"ppm");
+execution.setVariable("avgco",avgco);</script>
+    </scriptTask>
+    <sequenceFlow id="flow3" sourceRef="parallelgateway1" targetRef="scripttask2"></sequenceFlow>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow4" sourceRef="scripttask1" targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="scripttask2" targetRef="parallelgateway2"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway" default="flow9"></exclusiveGateway>
+    <sequenceFlow id="flow6" sourceRef="parallelgateway2" targetRef="exclusivegateway1"></sequenceFlow>
+    <scriptTask id="scripttask3" name="alert" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out.println("ALERT");
+com.diplab.serializableDevice.SerializableDevice131.getInstanceOfSerializableDevice131().alerton();</script>
+    </scriptTask>
+    <sequenceFlow id="flow7" name="avgco2&gt;1000 || avgco&gt;200" sourceRef="exclusivegateway1" targetRef="scripttask3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${avgco2>1000 || avgco>200}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow8" sourceRef="scripttask3" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="exclusivegateway1" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
+    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+      <bpmndi:BPMNShape bpmnElement="timerstartevent1" id="BPMNShape_timerstartevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="190.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="270.0" y="258.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="550.0" y="258.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="635.0" y="259.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask3" id="BPMNShape_scripttask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="800.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="990.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="225.0" y="277.0"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="278.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="290.0" y="258.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="290.0" y="298.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="357.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="357.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="485.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="569.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="258.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="485.0" y="357.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="357.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="298.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="590.0" y="278.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="279.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="675.0" y="279.0"></omgdi:waypoint>
+        <omgdi:waypoint x="800.0" y="277.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="680.0" y="280.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="905.0" y="277.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="277.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="655.0" y="259.0"></omgdi:waypoint>
+        <omgdi:waypoint x="655.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="768.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1007.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1007.0" y="260.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

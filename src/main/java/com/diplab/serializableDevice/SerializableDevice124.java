@@ -3,7 +3,7 @@ package com.diplab.serializableDevice;
 import java.io.Serializable;
 
 import com.diplab.webservice.Device124Service;
-
+import com.diplab.webservice.PinState;
 
 public class SerializableDevice124 implements Serializable {
 
@@ -21,16 +21,29 @@ public class SerializableDevice124 implements Serializable {
 		return device;
 	}
 
-	public double co2Ppm() {
-		return new Device124Service().getDevice124Port().co2Ppm();
-	}
-
 	public void executeAC() {
 		new Device124Service().getDevice124Port().executeAC();
 	}
 	
-	public double readTemperature() {
-		return new Device124Service().getDevice124Port().readTemperature();
+	public void setACtemperature28() {
+		new Device124Service().getDevice124Port().setACtemperature28();
+		
+	}
+	
+	public void off() {
+		new Device124Service().getDevice124Port().off();
+	}
+
+	public void on() {
+		new Device124Service().getDevice124Port().on();
+	}
+
+	public void toggle() {
+		new Device124Service().getDevice124Port().toggle();
+	}
+
+	public PinState getState() {
+		return new Device124Service().getDevice124Port().getState();
 	}
 
 }

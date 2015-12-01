@@ -13,21 +13,39 @@ public class TestDevice124 {
 	}
 
 	@Test
-	public void testCo2Ppm() {
-		double co2Ppm = device124Service.co2Ppm();
-		Assert.assertTrue("should above 400", co2Ppm >= 400);
-		Assert.assertTrue("should above 2000", co2Ppm <= 2000);
-	}
-
-	@Test
 	public void testExecuteAC() {
 		device124Service.executeAC();
 	}
 	
 	@Test
-	public void testReadTemperature() {
-		double temp = device124Service.readTemperature();
-		Assert.assertTrue("should be room temp", Math.abs(temp - 35) < 30);
+	public void testSetACTemperature28() {
+		device124Service.setACtemperature28();
+	}
+
+	@Test
+	public void testOff() {
+		device124Service.off();
+		Assert.assertEquals("should be off", PinState.LOW,
+				device124Service.getState());
+	}
+
+	@Test
+	public void testOn() {
+		device124Service.on();
+		Assert.assertEquals("should be on", PinState.HIGH,
+				device124Service.getState());
+	}
+
+	@Test
+	public void testToggle() {
+		device124Service.on();
+		device124Service.toggle();
+		Assert.assertEquals("should be off", PinState.LOW,
+				device124Service.getState());
+		device124Service.toggle();
+		Assert.assertEquals("should be on", PinState.HIGH,
+				device124Service.getState());
+	
 	}
 
 }

@@ -17,13 +17,6 @@ public class TestDevice129 {
 	}
 
 	@Test
-	public void testCo2Ppm() {
-		double co2Ppm = device129Service.co2Ppm();
-		Assert.assertTrue("should above 400", co2Ppm >= 400);
-		Assert.assertTrue("should above 2000", co2Ppm <= 2000);
-	}
-
-	@Test
 	public void testCoPpm(){
 		double coPpm = device129Service.cOppm();
 		Assert.assertTrue("should above 0", coPpm >= 0);
@@ -31,20 +24,23 @@ public class TestDevice129 {
 	}
 
 	@Test
-	public void testLock() {
-		device129Service.lock();
+	public void testCo2Ppm() {
+		double co2Ppm = device129Service.co2Ppm();
+		Assert.assertTrue("should above 400", co2Ppm >= 400);
+		Assert.assertTrue("should above 2000", co2Ppm <= 2000);
 	}
 
-	@Test
-	public void testUnlock() {
-		device129Service.unlock();
-	}
-	
 	@Test
 	public void testSmokePpm(){
 		double smokePpm = device129Service.getSmokePpm();
 		Assert.assertTrue("should above 0", smokePpm >= 0);
 		Assert.assertTrue("should above 2000", smokePpm <= 2000);
+	}
+
+	@Test
+	public void testReadTemperature() {
+		double temp = device129Service.readTemperature();
+		Assert.assertTrue("should be room temp", Math.abs(temp - 35) < 30);
 	}
 
 	@Test
@@ -74,9 +70,13 @@ public class TestDevice129 {
 	}
 
 	@Test
-	public void testReadTemperature() {
-		double temp = device129Service.readTemperature();
-		Assert.assertTrue("should be room temp", Math.abs(temp - 35) < 30);
+	public void testLock() {
+		device129Service.lock();
+	}
+
+	@Test
+	public void testUnlock() {
+		device129Service.unlock();
 	}
 
 }
